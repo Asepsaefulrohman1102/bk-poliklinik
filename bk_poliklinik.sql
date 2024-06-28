@@ -1,335 +1,160 @@
--- phpMyAdmin SQL Dump
--- version 5.2.0
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: May 15, 2024 at 05:57 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.1.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Versi server:                 8.0.30 - MySQL Community Server - GPL
+-- OS Server:                    Win64
+-- HeidiSQL Versi:               12.1.0.6537
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Database: `bk_poliklinik`
---
 
--- --------------------------------------------------------
+-- Membuang struktur basisdata untuk bk_poliklinik
+CREATE DATABASE IF NOT EXISTS `bk_poliklinik` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `bk_poliklinik`;
 
---
--- Table structure for table `daftar_poli`
---
+-- membuang struktur untuk table bk_poliklinik.daftar_poli
+CREATE TABLE IF NOT EXISTS `daftar_poli` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_pasien` int NOT NULL,
+  `id_jadwal` int NOT NULL,
+  `keluhan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `no_antrian` int unsigned DEFAULT NULL,
+  `status_periksa` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_pasien` (`id_pasien`,`id_jadwal`),
+  KEY `id_jadwal` (`id_jadwal`),
+  CONSTRAINT `daftar_poli_ibfk_1` FOREIGN KEY (`id_pasien`) REFERENCES `pasien` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `daftar_poli_ibfk_2` FOREIGN KEY (`id_jadwal`) REFERENCES `jadwal_periksa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `daftar_poli` (
-  `id` int(11) NOT NULL,
-  `id_pasien` int(11) NOT NULL,
-  `id_jadwal` int(11) NOT NULL,
-  `keluhan` text DEFAULT NULL,
-  `no_antrian` int(10) UNSIGNED DEFAULT NULL,
-  `status_periksa` enum('0','1') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `daftar_poli`
---
-
+-- Membuang data untuk tabel bk_poliklinik.daftar_poli: ~1 rows (lebih kurang)
 INSERT INTO `daftar_poli` (`id`, `id_pasien`, `id_jadwal`, `keluhan`, `no_antrian`, `status_periksa`) VALUES
-(6, 110, 1, 'sakit', 1, '0');
+	(19, 126, 21, 'Nyeri', 1, '1');
 
--- --------------------------------------------------------
+-- membuang struktur untuk table bk_poliklinik.detail_periksa
+CREATE TABLE IF NOT EXISTS `detail_periksa` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_periksa` int NOT NULL,
+  `id_obat` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_periksa` (`id_periksa`,`id_obat`),
+  KEY `id_obat` (`id_obat`),
+  CONSTRAINT `detail_periksa_ibfk_1` FOREIGN KEY (`id_periksa`) REFERENCES `periksa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `detail_periksa_ibfk_2` FOREIGN KEY (`id_obat`) REFERENCES `obat` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Table structure for table `detail_periksa`
---
+-- Membuang data untuk tabel bk_poliklinik.detail_periksa: ~0 rows (lebih kurang)
+INSERT INTO `detail_periksa` (`id`, `id_periksa`, `id_obat`) VALUES
+	(19, 14, 13);
 
-CREATE TABLE `detail_periksa` (
-  `id` int(11) NOT NULL,
-  `id_periksa` int(11) NOT NULL,
-  `id_obat` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dokter`
---
-
-CREATE TABLE `dokter` (
-  `id` int(11) NOT NULL,
+-- membuang struktur untuk table bk_poliklinik.dokter
+CREATE TABLE IF NOT EXISTS `dokter` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `nama` varchar(255) DEFAULT NULL,
   `alamat` varchar(255) DEFAULT NULL,
   `no_hp` varchar(50) DEFAULT NULL,
-  `id_poli` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+  `id_poli` int NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `id_poli` (`id_poli`),
+  CONSTRAINT `dokter_ibfk_1` FOREIGN KEY (`id_poli`) REFERENCES `poli` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `dokter`
---
-
+-- Membuang data untuk tabel bk_poliklinik.dokter: ~1 rows (lebih kurang)
 INSERT INTO `dokter` (`id`, `nama`, `alamat`, `no_hp`, `id_poli`) VALUES
-(11, 'AdiDok', 'Semarang', '0489921018', 1),
-(12, 'dokter2', 'semrang', '9', 2);
+	(14, 'Adidok', 'Semarang', '123456', 6),
+	(17, 'Asep Saeful Rohman', 'Semarang', '1234', 9);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `jadwal_periksa`
---
-
-CREATE TABLE `jadwal_periksa` (
-  `id` int(11) NOT NULL,
-  `id_dokter` int(11) NOT NULL,
-  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') DEFAULT NULL,
+-- membuang struktur untuk table bk_poliklinik.jadwal_periksa
+CREATE TABLE IF NOT EXISTS `jadwal_periksa` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_dokter` int NOT NULL,
+  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `jam_mulai` time DEFAULT NULL,
-  `jam_selesai` time DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `jam_selesai` time DEFAULT NULL,
+  `aktif` enum('Y','T') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_dokter` (`id_dokter`),
+  CONSTRAINT `jadwal_periksa_ibfk_1` FOREIGN KEY (`id_dokter`) REFERENCES `dokter` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `jadwal_periksa`
---
+-- Membuang data untuk tabel bk_poliklinik.jadwal_periksa: ~1 rows (lebih kurang)
+INSERT INTO `jadwal_periksa` (`id`, `id_dokter`, `hari`, `jam_mulai`, `jam_selesai`, `aktif`) VALUES
+	(17, 14, 'Senin', '12:12:00', '14:14:00', 'T'),
+	(20, 17, 'Senin', '12:00:00', '14:00:00', 'T'),
+	(21, 17, 'Selasa', '14:00:00', '15:00:00', 'Y');
 
-INSERT INTO `jadwal_periksa` (`id`, `id_dokter`, `hari`, `jam_mulai`, `jam_selesai`) VALUES
-(1, 11, 'Senin', '15:30:55', '15:50:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `obat`
---
-
-CREATE TABLE `obat` (
-  `id` int(11) NOT NULL,
+-- membuang struktur untuk table bk_poliklinik.obat
+CREATE TABLE IF NOT EXISTS `obat` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `nama_obat` varbinary(50) NOT NULL,
-  `kemasan` varchar(35) NOT NULL,
-  `harga` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `kemasan` varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `harga` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `obat`
---
-
+-- Membuang data untuk tabel bk_poliklinik.obat: ~2 rows (lebih kurang)
 INSERT INTO `obat` (`id`, `nama_obat`, `kemasan`, `harga`) VALUES
-(1, 0x636f6e746f68, 'plastik', 12),
-(4, 0x70616e61646f6f6c, 'botol', 1),
-(5, 0x70616e61646f6f6c, 'botol', 1);
+	(11, _binary 0x4875666167726970, 'Botol', 10000),
+	(13, _binary 0x50617261636574616d6f6c, 'Tablet', 15000);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `pasien`
---
-
-CREATE TABLE `pasien` (
-  `id` int(11) NOT NULL,
+-- membuang struktur untuk table bk_poliklinik.pasien
+CREATE TABLE IF NOT EXISTS `pasien` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `nama` varchar(255) NOT NULL,
   `alamat` varchar(255) NOT NULL,
   `no_ktp` varchar(255) NOT NULL,
   `no_hp` varchar(50) NOT NULL,
   `no_rm` varchar(25) DEFAULT NULL,
-  `password` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `pasien`
---
+-- Membuang data untuk tabel bk_poliklinik.pasien: ~0 rows (lebih kurang)
+INSERT INTO `pasien` (`id`, `nama`, `alamat`, `no_ktp`, `no_hp`, `no_rm`) VALUES
+	(125, 'Dian', 'Semarang', '123', '123', '202406-001'),
+	(126, 'Cahaya', 'Semarang', '1234', '1234', '202406-002');
 
-INSERT INTO `pasien` (`id`, `nama`, `alamat`, `no_ktp`, `no_hp`, `no_rm`, `password`) VALUES
-(95, 'Muhajirin', 'Jakarta', '123', '123', '202401-001', ''),
-(96, 'AlifAnwar2', 'Semarang', '2', '0808', '202401-002', ''),
-(102, 'contoh3', 'contoh2', '2', '1', '202401-003', ''),
-(103, 'contoh10', 'Kp. Sidomulyo, RT/RW: 002/001, Kel/Desa: Kota Baru, Kecamatan: Teluk Sebong', '112', '12', '202401-004', ''),
-(110, 'alif', 'Kp. Sidomulyo, RT/RW: 002/001, Kel/Desa: Kota Baru, Kecamatan: Teluk Sebong', '111', '085834203952', '202405-005', '');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `periksa`
---
-
-CREATE TABLE `periksa` (
-  `id` int(11) NOT NULL,
-  `id_daftar_poli` int(11) NOT NULL,
+-- membuang struktur untuk table bk_poliklinik.periksa
+CREATE TABLE IF NOT EXISTS `periksa` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_daftar_poli` int NOT NULL,
   `tgl_periksa` datetime NOT NULL,
-  `catatan` text DEFAULT NULL,
-  `biaya_periksa` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+  `catatan` text,
+  `biaya_periksa` int DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `id_daftar_poli` (`id_daftar_poli`),
+  CONSTRAINT `periksa_ibfk_1` FOREIGN KEY (`id_daftar_poli`) REFERENCES `daftar_poli` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- --------------------------------------------------------
+-- Membuang data untuk tabel bk_poliklinik.periksa: ~0 rows (lebih kurang)
+INSERT INTO `periksa` (`id`, `id_daftar_poli`, `tgl_periksa`, `catatan`, `biaya_periksa`) VALUES
+	(14, 19, '2024-06-28 23:13:00', 'Banyak Istirahat', 165000);
 
---
--- Table structure for table `poli`
---
+-- membuang struktur untuk table bk_poliklinik.poli
+CREATE TABLE IF NOT EXISTS `poli` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nama_poli` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `keterangan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `poli` (
-  `id` int(11) NOT NULL,
-  `nama_poli` varchar(25) NOT NULL,
-  `keterangan` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `poli`
---
-
+-- Membuang data untuk tabel bk_poliklinik.poli: ~5 rows (lebih kurang)
 INSERT INTO `poli` (`id`, `nama_poli`, `keterangan`) VALUES
-(1, 'Poliklinik Satu', 'Sangat murah'),
-(2, 'Poliklinik dua', 'Mahal'),
-(3, 'Poliklinik dua', 'Mahal');
+	(6, 'Poliklinik Penyakit Dalam', 'Spesialis Penyakit Dalam'),
+	(7, 'Poliklinik Mata', 'Spesialis Mata'),
+	(8, 'Poliklinik Anak', 'Spesialis Anak'),
+	(9, 'Poliklinik Jantung', 'Spesialis Jantung'),
+	(10, 'Poliklinik THT', 'Spesialis THT'),
+	(12, 'Polikliknik Paru-Paru', 'Spesialis Paru-paru');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `daftar_poli`
---
-ALTER TABLE `daftar_poli`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_pasien` (`id_pasien`,`id_jadwal`),
-  ADD KEY `id_jadwal` (`id_jadwal`);
-
---
--- Indexes for table `detail_periksa`
---
-ALTER TABLE `detail_periksa`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_periksa` (`id_periksa`,`id_obat`),
-  ADD KEY `id_obat` (`id_obat`);
-
---
--- Indexes for table `dokter`
---
-ALTER TABLE `dokter`
-  ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD KEY `id_poli` (`id_poli`);
-
---
--- Indexes for table `jadwal_periksa`
---
-ALTER TABLE `jadwal_periksa`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_dokter` (`id_dokter`);
-
---
--- Indexes for table `obat`
---
-ALTER TABLE `obat`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `pasien`
---
-ALTER TABLE `pasien`
-  ADD PRIMARY KEY (`id`) USING BTREE;
-
---
--- Indexes for table `periksa`
---
-ALTER TABLE `periksa`
-  ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD KEY `id_daftar_poli` (`id_daftar_poli`);
-
---
--- Indexes for table `poli`
---
-ALTER TABLE `poli`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `daftar_poli`
---
-ALTER TABLE `daftar_poli`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `detail_periksa`
---
-ALTER TABLE `detail_periksa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `dokter`
---
-ALTER TABLE `dokter`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `jadwal_periksa`
---
-ALTER TABLE `jadwal_periksa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `obat`
---
-ALTER TABLE `obat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `pasien`
---
-ALTER TABLE `pasien`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
-
---
--- AUTO_INCREMENT for table `periksa`
---
-ALTER TABLE `periksa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `poli`
---
-ALTER TABLE `poli`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `daftar_poli`
---
-ALTER TABLE `daftar_poli`
-  ADD CONSTRAINT `daftar_poli_ibfk_1` FOREIGN KEY (`id_pasien`) REFERENCES `pasien` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `daftar_poli_ibfk_2` FOREIGN KEY (`id_jadwal`) REFERENCES `jadwal_periksa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `detail_periksa`
---
-ALTER TABLE `detail_periksa`
-  ADD CONSTRAINT `detail_periksa_ibfk_1` FOREIGN KEY (`id_periksa`) REFERENCES `periksa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `detail_periksa_ibfk_2` FOREIGN KEY (`id_obat`) REFERENCES `obat` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `dokter`
---
-ALTER TABLE `dokter`
-  ADD CONSTRAINT `dokter_ibfk_1` FOREIGN KEY (`id_poli`) REFERENCES `poli` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `jadwal_periksa`
---
-ALTER TABLE `jadwal_periksa`
-  ADD CONSTRAINT `jadwal_periksa_ibfk_1` FOREIGN KEY (`id_dokter`) REFERENCES `dokter` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `periksa`
---
-ALTER TABLE `periksa`
-  ADD CONSTRAINT `periksa_ibfk_1` FOREIGN KEY (`id_daftar_poli`) REFERENCES `daftar_poli` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
-
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
